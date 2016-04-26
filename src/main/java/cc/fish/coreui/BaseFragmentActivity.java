@@ -12,10 +12,13 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.fish.coreui.annotation.Injector;
+
 /**
  * Created by fish on 16-4-25.
  */
 abstract public class BaseFragmentActivity extends Activity {
+    final public static String DECLARED_FIELD_DEFAULT_PAGE = "mDefaultPage";
 
     private Class<BaseFragment>[] fCls = null;
 
@@ -26,9 +29,13 @@ abstract public class BaseFragmentActivity extends Activity {
 
     private BaseFragment[] fragments = null;
 
+    private int mDefaultPage;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Injector.initFragmentActivity(this);
         super.onCreate(savedInstanceState);
         fCls = putFragments();
         fragments = new BaseFragment[fCls.length];
@@ -36,28 +43,29 @@ abstract public class BaseFragmentActivity extends Activity {
         llBottom = getBottomLayout();
         initBaseView();
         initView();
+        setTabSel(llBottom.getChildAt(mDefaultPage), mDefaultPage);
     }
 
     private void initBaseView() {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
         for (int i = 0; i < fCls.length; i++) {
             final int index = i;
             View v = getBottomItemView(index);
             v.setOnClickListener(view -> {
                 setTabSel(view, index);
             });
-            llBottom.addView(v, params);
+            llBottom.addView(v);
         }
     }
 
 
 
-    private void setTabSel(View item, int index) {
+    protected void setTabSel(View item, int index) {
+        onItemClick(item, index);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         for (int i = 0; i < fCls.length; i++) {
-            checkBottomItem(llBottom.getChildAt(i), i, false);
+            checkAllBottomItem(llBottom.getChildAt(i), i, false);
             if (i == index) {
-                checkBottomItem(llBottom.getChildAt(index), index, true);
+                checkAllBottomItem(llBottom.getChildAt(index), index, true);
                 if (fragments[index] == null) {
                     try {
                         BaseFragment bf = fCls[index].newInstance();
@@ -77,6 +85,8 @@ abstract public class BaseFragmentActivity extends Activity {
         ft.commitAllowingStateLoss();
     }
 
+    protected abstract void onItemClick(View item, int index);
+
     protected LayoutInflater getBottomLayoutInflater() {
         return LayoutInflater.from(this);
     }
@@ -91,8 +101,6 @@ abstract public class BaseFragmentActivity extends Activity {
 
     protected abstract LinearLayout getBottomLayout();
 
-    protected abstract void checkBottomItem(View item, int position, boolean isChecked);
-
-
+    protected abstract void checkAllBottomItem(View item, int position, boolean isChecked);
 
 }

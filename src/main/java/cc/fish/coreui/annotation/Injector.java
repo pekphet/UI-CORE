@@ -1,10 +1,8 @@
 package cc.fish.coreui.annotation;
 
-import android.app.Activity;
+import java.lang.reflect.Field;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
+import cc.fish.coreui.BaseFragmentActivity;
 import cc.fish.coreui.BaseSplashActivity;
 
 /**
@@ -21,5 +19,21 @@ public class Injector {
             return;
         }
         bsa.setConfig(splash.delay(), splash.clz());
+    }
+
+    public static void initFragmentActivity(BaseFragmentActivity bfa) {
+        DefaultPage defaultPage = bfa.getClass().getAnnotation(DefaultPage.class);
+        if (defaultPage == null) {
+            return;
+        }
+        try {
+            Field f = BaseFragmentActivity.class.getDeclaredField(BaseFragmentActivity.DECLARED_FIELD_DEFAULT_PAGE);
+            f.setAccessible(true);
+            f.set(bfa, defaultPage.value());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 }
