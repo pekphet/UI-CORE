@@ -5,12 +5,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import cc.fish.coreui.annotation.Injector;
 
@@ -85,22 +80,54 @@ abstract public class BaseFragmentActivity extends Activity {
         ft.commitAllowingStateLoss();
     }
 
+    /**
+     * On action button click callback
+     * @param item  The clicked item
+     * @param index The position
+     */
     protected abstract void onItemClick(View item, int index);
 
     protected LayoutInflater getBottomLayoutInflater() {
         return LayoutInflater.from(this);
     }
 
+    /**
+     *  Do operations after abstract methods called.
+     *  U can do onCreate after abstract methods called.
+     */
     protected abstract void initView();
 
+    /**
+     *
+     * @return Array of Fragments'class
+     */
     protected abstract Class<BaseFragment>[] putFragments();
 
+    /**
+     *
+     * @param index item's position
+     * @return  //Return Action Click bar's item at index
+     */
     protected abstract View getBottomItemView(int index);
 
+    /**
+     * @return The repository of Fragments --> Resource id
+     */
     protected abstract int getFLid();
 
+    /**
+     * @return The repository of Action buttons at bottom normally.
+     */
     protected abstract LinearLayout getBottomLayout();
 
+    /**
+     *  The method is used for fresh ui state.
+     *  The method will be called on every item when checked the item.
+     *  Must Only do UI operation!
+     * @param item      The checked item
+     * @param position  Item's position
+     * @param isChecked Whether the item is checked
+     */
     protected abstract void checkAllBottomItem(View item, int position, boolean isChecked);
 
 }
